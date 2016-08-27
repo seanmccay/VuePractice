@@ -1,0 +1,115 @@
+var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+
+var routes = require('./routes/index');
+var users = require('./routes/users');
+
+var app = express();
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', routes);
+app.use('/users', users);
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
+
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    error: {}
+  });
+});
+
+
+module.exports = app;
+
+
+// Start Sean's code
+new Vue({
+    // We want to target the div with an id of 'events'
+    el: '#events',
+    // Here we can register any values or collections that hold data
+    // for the application
+    data: {
+        event: {name: '', description: '', date: ''},
+        events: []
+    },
+    // Anything within the ready function will run when the application loads
+    ready: function() {
+        // When the application loads, we want to call the method that initializes
+        // some data
+        this.fetchEvents();
+    },
+    // Methods we want to use in our application are registered here
+    methods: {
+        fetchEvents: function() {
+            var events = [
+                {
+                    id: 1,
+                    name: 'TIFF',
+                    description: 'Toronto International Film Festival',
+                    date: '2015-09-10'
+                },
+                {
+                    id: 2,
+                    name: 'The Martian Premiere',
+                    description: 'The Martian comes to theatres.',
+                    date: '2015-10-02'
+                },
+                {
+                    id: 3,
+                    name: 'SXSW',
+                    description: 'Music, film and interactive festival in Austin, TX.',
+                    date: '2016-03-11'
+                }
+            ];
+            // $set is a convenience method provided by Vue that is similar to pushing
+            // data onto an array
+            this.$set('events', events);
+        },
+
+        // Adds an event to the existing events array
+        addEvent: function() {
+            if(this.event.name) {
+                this.events.push(this.event);
+                this.event = { name: '', description: '', date: '' };
+            }
+        }
+    }
+});
